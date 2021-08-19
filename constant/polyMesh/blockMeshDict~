@@ -1,0 +1,195 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  1.6                                   |
+|   \\  /    A nd           | Web:      http://www.OpenFOAM.org               |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      blockMeshDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+// block definition for a porosity with an angled inlet/outlet
+// the porosity is not aligned with the main axes
+//
+       
+  
+  
+//refine times
+   
+
+      
+ //domain length 1
+ //domain length 2
+ //domain length 3
+ //domain length 3
+ //domain length 3
+ //domain length 3
+
+           
+           
+  
+  
+convertToMeters 1;
+
+vertices
+(
+    //vertex on the front
+    (0 0 0)        //0   block 0    the real height of inlet is 0.045
+    (0.27 0 0)
+    (0.27 0.27 0)
+    (0 0.27 0)
+
+    (0 0 0.27)     //4
+    (0.27 0 0.27)
+    (0.27 0.27 0.27)
+    (0 0.27 0.27)
+
+    (0 0 0.8)    //8
+    (0.27 0 0.8)
+    (0.27 0.27 0.8)
+    (0 0.27 0.8)
+
+    (0 0 1)	//12
+    (0.27 0 1)
+    (0.27 0.27 1)
+    (0 0.27 1)
+
+    (6.7 0 0)	//16
+    (6.7 0.27 0)
+    (6.7 0.27 0.27)
+    (6.7 0 0.27)
+
+    (6.7 0 0.8)    //20
+    (6.7 0.27 0.8)
+    (6.7 0.27 1)
+    (6.7 0 1)
+
+    (6.75 0 0.8)     //24   right upper block
+    (7.75 0 0.8)
+    (7.75 0.27 0.8)
+    (6.75 0.27 0.8) 
+
+    (6.75 0 1)       //28
+    (7.75 0 1)
+    (7.75 0.27 1)
+    (6.75 0.27 1)
+
+    (6.75 0 0.27)     //32    right middle block
+    (7.75 0 0.27)
+    (7.75 0.27 0.27)
+    (6.75 0.27 0.27)
+
+    (6.7 0.09 0)    //36    outlet block
+    (7 0.09 0)
+    (7 0.18 0)
+    (6.7 0.18 0) 
+
+    (6.7 0.09 0.12)   //40
+    (7 0.09 0.12)
+    (7 0.18 0.12)
+    (6.7 0.18 0.12) 
+);
+
+blocks
+(
+    hex (0 1 2 3 4 5 6 7) (6 5 6) simpleGrading (1 1 1)      //inlet block
+    hex (4 5 6 7 8 9 10 11) (6 5 11) simpleGrading (1 1 1)     //left middle block
+    hex (8 9 10 11 12 13 14 15) (6 5 4) simpleGrading (1 1 1)     //left upper block
+    hex (1 16 17 2 5 19 18 6) (129 5 6) simpleGrading (1 1 1)     //middle lower block
+    hex (5 19 18 6 9 20 21 10) (129 5 11) simpleGrading (1 1 1)      //middle middle block
+    hex (9 20 21 10 13 23 22 14) (129 5 4) simpleGrading (1 1 1)      //middle upper block
+    hex (36 37 38 39 40 41 42 43) (6 2 3) simpleGrading (1 1 1)    //outlet block
+    hex (20 24 27 21 23 28 31 22) (1 5 4) simpleGrading (1 1 1)  //connect
+    hex (24 25 26 27 28 29 30 31) (20 5 4) simpleGrading (1 1 1) //right upper block
+    hex (32 33 34 35 24 25 26 27) (20 5 11) simpleGrading (1 1 1) // right middle block
+
+);
+
+edges
+(
+);
+
+patches
+(
+    symmetryPlane top
+    (
+	    (12 13 14 15)   //from left upper block
+	    (13 23 22 14)  //from middle upper block 
+	    (23 28 31 22) //from connect  
+ 	    (28 29 30 31) //from right upper block 
+    )
+
+    patch inlet
+    (
+	    (4 7 3 0) //from inlet block
+    )
+
+    patch outlet
+    (
+     	    (41 37 38 42) //from outlet block
+    )
+
+    wall outletConnectMaster
+    (
+            (18 19 16 17) //from middle lower block
+    )
+
+    wall outletConnectSlave
+    (
+           (40 43 39 36) //from outlet block
+    )
+
+    wall walls
+    (
+            //upper wall
+	    (0 1 5 4)     // from inlet block
+            (4 5 9 8)     // from left middle block
+            (8 9 13 12)   // from left upper block
+	    (1 16 19 5)   // from middle lower block
+	    (5 19 20 9)   // from middle middle block
+            (9 20 23 13)  // from middle upper block
+            (36 37 41 40)  // from outlet block
+	    (20 24 28 23)  // from connect
+	    (24 25 29 28)  //from right upper block
+	    (32 33 25 24)  //from right middle block
+            
+            //lower wall
+	    (2 3 7 6)  //from inlet block
+	    (6 7 11 10)  //from left middle block
+	    (10 11 15 14) //from left upper block
+ 	    (17 2 6 18) //from middle lower block
+	    (18 6 10 21) //from middle middle block
+	    (21 10 14 22) //from middle upper block
+	    (38 39 43 42) //from outlet block
+	    (27 21 22 31) //from connect
+	    (26 27 31 30) //from upper block
+            (34 35 27 26) //from right middle block	
+
+            //restWall
+ 	    (2 17 16 1)  //from middler lower block
+            (3 2 1 0) //from inlet block 
+            (8 11 7 4)   //from left middle block
+	    (12 15 11 8)  //from left upper block
+	    (29 25 26 30) //from right upper block
+	    (25 33 34 26)  //from right middle block
+	    (35 34 33 32)
+            (24 27 35 32)
+            (21 27 24 20) //from connect
+	    (20 19 18 21) //from middle middle block
+            (40 41 42 43) //from outlet block
+            (36 37 38 39)           
+    )
+
+);
+
+mergePatchPairs
+(
+	(outletConnectMaster outletConnectSlave)
+);
+
+// ************************************************************************* //
